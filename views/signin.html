@@ -1,0 +1,95 @@
+{% extends "base.html" %} {% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>WebSocket Chat</h1>
+            <div class="alert alert-danger">Please sign in before join the room.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><span class="glyphicon glyphicon-user"></span> Please sign in</h3>
+                </div>
+                <div class="panel-body">
+                    <form id="form" action="signin" method="POST">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input id="name" type="text" name="name" class="form-control" placeholder="你的昵称" value="{{ name }}">
+                            <p class="help-block">Your user name</p>
+                            <label>Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="请输入密码">
+                            <p class="help-block">Your user password</p>
+                        </div>
+                        <button type="button" class="btn btn-primary">Sign In</button>
+                        <button type="button" class="btn btn-info" style="margin-left: 30px;">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  
+  var 
+      form = $('#form'),
+      name = '',
+      password = '',
+      btn = $('.btn-primary'),
+      btnRe = $('.btn-info');
+
+  btn.click(  () => {
+    name = $('[name=name]').val()
+    password = form.find('[name=password]').val()
+    console.log(name)
+    console.log(password)
+    if (!password) {
+      alert('亲输入密码')
+      return
+    }
+    var jqxhr = $.post('/api/user', {
+    name: name,
+    password: password
+    }).done( (data) => {
+      console.log(data)
+      const id = data.id
+      if (id === 404) {
+        alert('用户不存在')
+      } else if (id === 0 ) {
+        alert('密码错误')
+      } else {
+        form.submit()
+      } 
+    }).fail( (xhr, status) => {
+       console.log('失败'+xhr.status+',原因：'+status)
+    }).always( () => {
+      console.log('请求发送成功')
+    })
+  })
+  
+  btnRe.click( () => {
+    name = $('[name=name]').val()
+    password = form.find('[name=password]').val()
+    var jqxhr = $.post('/api/re', {
+    name: name,
+    password: password   
+    }).done( (data) => {
+      console.log(data)
+      const id = data.id
+      if (id === 0) {
+        alert('用户已存在')
+      } else {
+        alert('注册成功！')
+        form.submit()
+      }
+    }).fail( (xhr, status) => {
+       console.log('失败'+xhr.status+',原因：'+status)
+    }).always( () => {
+      console.log('请求发送成功')
+    })
+  })
+</script>
+{% endblock %}
