@@ -1,5 +1,5 @@
 // sign in:
-const {re, se } = require('../register');
+const {re, se } = require('../components/register');
 
 module.exports = {
     'GET /signin': async (ctx, next) => {
@@ -31,7 +31,6 @@ module.exports = {
     'POST /api/user': async (ctx, next) => {
         let name = ctx.request.body.name;
         let password = ctx.request.body.password;
-        console.log(password)
         let result = await se(name)
         ctx.response.type = 'text/plain'
         if (result.id) {

@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'production';
 const url = require('url');
 
 const ws = require('ws');
@@ -8,13 +9,15 @@ const Koa = require('koa');
 
 const bodyParser = require('koa-bodyparser');
 
-const controller = require('./controller');
+const controller = require('./components/controller');
 
-const templating = require('./templating');
+const templating = require('./components/templating');
 
 const path = require('path');
 
 const WebSocketServer = ws.Server;
+
+const log = require('./components/log')();
 
 const app = new Koa();
 
@@ -31,7 +34,7 @@ app.use(async (ctx, next) => {
 });
 
 // static file support:
-let staticFiles = require('./static-files');
+let staticFiles = require('./components/static-files');
 app.use(staticFiles('/static/', __dirname + '/static'));
 
 // parse request body:
@@ -121,11 +124,7 @@ function createWebSocketServer(server, onConnection, onMessage, onClose, onError
         }
         ws.user = user;
         ws.wss = wss;
-        console.log(wss.clients)
-        onConnection.apply(ws);
-        console.log('last demo')
-        console.log(wss.clients[wss.clients.length-1] === ws)
-        console.log(ws.readyState,ws.OPEN)  
+        onConnection.apply(ws);    
     });
     console.log('WebSocketServer was attached.');
     return wss;
